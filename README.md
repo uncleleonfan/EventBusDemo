@@ -19,6 +19,7 @@
 	}
 
 ### 3. 注册和反注册EventBus
+#### 在Activity中 ####
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,15 @@
         EventBus.getDefault().unregister(this);
     }
 
+#### 在Fragment中 ####
+1. 在onCreate中注册，在onDestory中反注册
+2. 在onCreateView中注册，在onDestoryView中反注册
+
+#### 在自定义控件中 ####
+在onAttachToWindow中注册，在onDetachFromWindow中反注册
+
+#### 普通类 ####
+在类中创建注册方法和反注册方法，在合适的时机调用
 
 ### 4. 监听事件
 	
@@ -139,7 +149,7 @@
         synchronized (this) {
             for (SubscriberMethod subscriberMethod : subscriberMethods) {
 				//将订阅方法记录下来保存到对应事件的订阅列表中
-				//Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType中
+				//Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType
                 subscribe(subscriber, subscriberMethod);
             }
         }
