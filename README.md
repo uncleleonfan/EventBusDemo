@@ -97,8 +97,151 @@
     }
 
 
-欢迎关注微信公众号
+## EventBus源码分析 ##
 
-![](http://oi5nqn6ce.bkt.clouddn.com/itheima/booster/code/qrcode.png)
+### 单例模式 ###
+
+	//简单单例，当多线程时，还是会创建多个示例
+    public static EventBus getDefault() {
+        if (defaultInstance == null) {
+            defaultInstance = new EventBus();
+        }
+        return defaultInstance;
+    }
+
+	//加锁单例，每次调用都检查是否加锁
+    public static synchronized EventBus getDefault() {
+        if (defaultInstance == null) {
+            defaultInstance = new EventBus();
+        }
+        return defaultInstance;
+    }
+
+	//两个非空，一个加锁
+    public static EventBus getDefault() {
+        if (defaultInstance == null) {
+            synchronized (EventBus.class) {
+                if (defaultInstance == null) {
+                    defaultInstance = new EventBus();
+                }
+            }
+        }
+        return defaultInstance;
+    }
+
+
+### 注册 ###
+
+    public void register(Object subscriber) {
+        Class<?> subscriberClass = subscriber.getClass();
+		//找到订阅者中所有的订阅方法
+        List<SubscriberMethod> subscriberMethods = subscriberMethodFinder.findSubscriberMethods(subscriberClass);
+        synchronized (this) {
+            for (SubscriberMethod subscriberMethod : subscriberMethods) {
+				//将订阅方法记录下来保存到对应事件的订阅列表中
+				//Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType中
+                subscribe(subscriber, subscriberMethod);
+            }
+        }
+    }
+
+### 发布事件 ###
+
+    public void post(Object event) {
+        PostingThreadState postingState = currentPostingThreadState.get();
+        List<Object> eventQueue = postingState.eventQueue;
+        eventQueue.add(event);.//添加到事件队列
+
+        if (!postingState.isPosting) {
+            postingState.isMainThread = Looper.getMainLooper() == Looper.myLooper();
+            postingState.isPosting = true;
+            if (postingState.canceled) {
+                throw new EventBusException("Internal error. Abort state was not reset");
+            }
+            try {
+                while (!eventQueue.isEmpty()) {
+					//发布的单个事件
+                    postSingleEvent(eventQueue.remove(0), postingState);
+                }
+            } finally {
+                postingState.isPosting = false;
+                postingState.isMainThread = false;
+            }
+        }
+    }
+
+
+    private void postSingleEvent(Object event, PostingThreadState postingState) throws Error {
+        Class<?> eventClass = event.getClass();
+        boolean subscriptionFound = false;
+        if (eventInheritance) {
+			........
+        } else {
+			//发布对应事件类型的事件
+            subscriptionFound = postSingleEventForEventType(event, postingState, eventClass);
+        }
+		.........
+    }
+
+    private boolean postSingleEventForEventType(Object event, PostingThreadState postingState, Class<?> eventClass) {
+        CopyOnWriteArrayList<Subscription> subscriptions;
+        synchronized (this) {
+            subscriptions = subscriptionsByEventType.get(eventClass);//获取对应事件的订阅列表
+        }
+        if (subscriptions != null && !subscriptions.isEmpty()) {
+			//遍历订阅列表
+            for (Subscription subscription : subscriptions) {
+                postingState.event = event;
+                postingState.subscription = subscription;
+                boolean aborted = false;
+                try {
+					//发布事件到一个订阅
+                    postToSubscription(subscription, event, postingState.isMainThread);
+                    aborted = postingState.canceled;
+                }
+				........
+            }
+            return true;
+        }
+		......
+    }
+
+	private void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
+		//判断订阅方法的线程模型
+        switch (subscription.subscriberMethod.threadMode) {
+            case POSTING:
+				//POSTING线程模型下，直接反射调用订阅方法
+                invokeSubscriber(subscription, event);
+                break;
+            case MAIN:
+				//MAIN线程模型
+                if (isMainThread) {
+					//如果当前是主线程，则直接反射调用订阅方法
+                    invokeSubscriber(subscription, event);
+                } else {
+					//如果当前不是主线程，则使用绑定主线程Looper的Handler在主线程调用订阅方法
+                    mainThreadPoster.enqueue(subscription, event);
+                }
+                break;
+            case BACKGROUND:
+				//BACKGROUND线程模型
+                if (isMainThread) {
+					//如果当前是主线程，则在EventBus内部的线程池中执行
+                    backgroundPoster.enqueue(subscription, event);
+                } else {
+					//如果当前是子线程，则直接在该子线程反射调用订阅方法
+                    invokeSubscriber(subscription, event);
+                }
+                break;
+            case ASYNC:
+				//ASYNC线程模型
+				//直接在EventBus的线程池中执行
+                asyncPoster.enqueue(subscription, event);
+                break;
+            default:
+                throw new IllegalStateException("Unknown thread mode: " + subscription.subscriberMethod.threadMode);
+        }
+    }
+
 
 
