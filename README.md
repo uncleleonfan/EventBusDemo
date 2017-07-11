@@ -41,7 +41,7 @@
 2. 在onCreateView中注册，在onDestoryView中反注册
 
 #### 在自定义控件中 ####
-在onAttachToWindow中注册，在onDetachFromWindow中反注册
+在onAttachedToWindow中注册，在onDetachedFromWindow中反注册
 
 #### 普通类 ####
 在类中创建注册方法和反注册方法，在合适的时机调用
