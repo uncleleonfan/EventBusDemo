@@ -2,6 +2,8 @@
 
 开源地址：[https://github.com/greenrobot/EventBus](https://github.com/greenrobot/EventBus)
 
+官方文档：[http://greenrobot.org/eventbus/documentation/](http://greenrobot.org/eventbus/documentation/)
+
 
 ## 使用步骤
 
