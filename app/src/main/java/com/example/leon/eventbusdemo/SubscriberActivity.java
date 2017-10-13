@@ -24,6 +24,9 @@ public class SubscriberActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         //注册事件总线
         EventBus.getDefault().register(this);
+
+        Intent intent = new Intent(this, MyService.class);
+        startService(intent);
     }
 
     /**

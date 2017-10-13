@@ -17,6 +17,8 @@
 
         <activity android:name=".PublisherActivity"/>
 
+        <service android:name=".MyService"/>
+
     </application>
 
 </manifest>
