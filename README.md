@@ -108,6 +108,15 @@
         }).start();
     }
 
+## 优先级和事件取消 ##
+[Priorities and Even Cancellation](http://greenrobot.org/eventbus/documentation/priorities-and-event-cancellation/)
+
+## 粘性事件 ##
+[Sticky Events](http://greenrobot.org/eventbus/documentation/configuration/sticky-events/)
+
+## 订阅者索引 ##
+[Subscriber Index](http://greenrobot.org/eventbus/documentation/subscriber-index/)
+
 
 ## EventBus源码分析 ##
 
