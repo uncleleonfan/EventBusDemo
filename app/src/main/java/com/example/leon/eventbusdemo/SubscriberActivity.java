@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class SubscriberActivity extends AppCompatActivity{
 
     private static final String TAG = "SubscriberActivity";
+    private MyObject mObject;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,6 +28,9 @@ public class SubscriberActivity extends AppCompatActivity{
 
         Intent intent = new Intent(this, MyService.class);
         startService(intent);
+
+        mObject = new MyObject();
+        mObject.registerEventBus();
     }
 
     /**
@@ -69,6 +73,8 @@ public class SubscriberActivity extends AppCompatActivity{
         super.onDestroy();
         //反注册事件总线
         EventBus.getDefault().unregister(this);
+
+        mObject.unRegisterEventBus();
     }
 
     public void onStartPublisherActivity(View view) {

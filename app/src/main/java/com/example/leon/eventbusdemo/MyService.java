@@ -33,7 +33,7 @@ public class MyService extends Service {
     /**
      * POSTING线程模型：在哪个线程发布事件，就在哪个线程执行onPostingEvent方法
      */
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 1)
     public void onPostingEvent(MyEvent event) {
         Log.d(TAG, "onPostingEvent:" + Thread.currentThread().getName());
     }
