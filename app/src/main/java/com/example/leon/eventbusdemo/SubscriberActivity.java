@@ -81,4 +81,13 @@ public class SubscriberActivity extends AppCompatActivity{
         Intent intent = new Intent(this, PublisherActivity.class);
         startActivity(intent);
     }
+
+    public void onPublishStickyEvent(View view) {
+        EventBus.getDefault().postSticky(new MyStickyEvent());
+    }
+
+    public void onStartStickyEvent(View view) {
+        Intent intent = new Intent(this, StickyActivity.class);
+        startActivity(intent);
+    }
 }

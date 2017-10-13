@@ -10,4 +10,16 @@
         android:text="启动PublisherActivity"
         android:onClick="onStartPublisherActivity"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送StickyEvent"
+        android:onClick="onPublishStickyEvent"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="启动StickyActivity"
+        android:onClick="onStartStickyEvent"/>
+
 </LinearLayout>

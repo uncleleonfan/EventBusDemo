@@ -19,6 +19,8 @@
 
         <service android:name=".MyService"/>
 
+        <activity android:name=".StickyActivity"/>
+
     </application>
 
 </manifest>
