@@ -1,5 +1,6 @@
 package com.example.leon.eventbusdemo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +14,9 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * Created by Leon on 2016/9/5.
  */
-public class MainActivity extends AppCompatActivity{
+public class SubscriberActivity extends AppCompatActivity{
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "SubscriberActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,29 +24,6 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         //注册事件总线
         EventBus.getDefault().register(this);
-    }
-
-    /**
-     * 在主线程中发布事件
-     * @param view
-     */
-    public void onPublishEventOnMainThread(View view) {
-        MyEvent event = new MyEvent("主线程的消息");
-        EventBus.getDefault().post(event);
-    }
-
-    /**
-     * 在子线程中发送事件
-     * @param view
-     */
-    public void onPublishEventOnBGThread(View view) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                MyEvent event = new MyEvent("后台线程的消息");
-                EventBus.getDefault().post(event);
-            }
-        }).start();
     }
 
     /**
@@ -88,5 +66,10 @@ public class MainActivity extends AppCompatActivity{
         super.onDestroy();
         //反注册事件总线
         EventBus.getDefault().unregister(this);
+    }
+
+    public void onStartPublisherActivity(View view) {
+        Intent intent = new Intent(this, PublisherActivity.class);
+        startActivity(intent);
     }
 }

@@ -7,7 +7,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="启动PublisherActivity"
-        android:onClick="onStartPublisherActivity"/>
+        android:text="在主线程发布事件"
+        android:onClick="onPublishEventOnMainThread"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在子线程发布事件"
+        android:onClick="onPublishEventOnBGThread"/>
 
 </LinearLayout>
